@@ -14,11 +14,11 @@ class ClimbRamp(AutoRoutine):
         self.drivetrain = drivetrain
         self.drivetrain.resetGyro()
         self.direction_controller = AIOPID(
-            prop=4/10000.0,
-            integral=2/10000.0,
+            prop=4/100.0,
+            integral=2/100.0,
             derivative=0,
             setPoint=0,
-            tol=10
+            tol=0.3
         )
         self.drivetrain.zeroEncoders()
         self.reset()
