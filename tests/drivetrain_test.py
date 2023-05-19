@@ -45,3 +45,34 @@ def test_drive_straight(mocktrain: Drivetrain, monkeypatch: MonkeyPatch, lDist, 
         auto.drivetrain.move.assert_called_once_with(0, auto.forward_rate)
     else:
         auto.drivetrain.move.assert_called_once()
+
+@pytest.mark.parametrize(('gyroy', 'output'),(
+        (7, False),
+        (8, True),
+        (3, False),
+        (1, False),
+        (0, False),
+        (10, True)
+))
+def test_tip_up(mocktrain: Drivetrain, monkeypatch: MonkeyPatch, gyroy, output):
+    # setup
+    auto = ClimbRamp(mocktrain)
+    def mock_getGyroAngleY(self):
+        return gyroy
+
+    monkeypatch.setattr(Drivetrain, "getGyroAngleY", mock_getGyroAngleY)
+    # action
+    result = auto.did_tip_up()
+    # assert
+    assert result == output
+
+def test_reset(mocktrain: Drivetrain):
+    # setup, extra step to "un-reset the auto before testing"
+    auto = ClimbRamp(mocktrain)
+    auto.ended_ramp = True
+    auto.started_ramp = True
+    auto.forward_rate = 100
+    # action
+    auto.reset()
+    # assert
+    assert auto.ended_ramp == False and auto.started_ramp == False and auto.forward_rate == .8
